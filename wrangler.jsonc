@@ -16,7 +16,15 @@
 	},
 	"observability": {
 		"enabled": true
-	}
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "les-anemones",
+			"database_id": "466e42ba-3706-4985-95b2-b26a33c784d6",
+			"migrations_dir": "./src/lib/server/db/migrations"
+		}
+	]
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

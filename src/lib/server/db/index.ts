@@ -1,10 +1,11 @@
-import { drizzle } from 'drizzle-orm/libsql';
-import { createClient } from '@libsql/client';
-import * as schema from './schema';
-import { env } from '$env/dynamic/private';
+import { drizzle, DrizzleD1Database } from "drizzle-orm/d1";
+import * as schema from "./schema";
+import type { RequestEvent } from "@sveltejs/kit";
 
-if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
+export function db(event?: RequestEvent): DrizzleD1Database<typeof schema> {
+  const db = event?.platform?.env.DB;
+  if (!db) throw new Error("Database connection is not available");
+  return drizzle(db, { schema });
+}
 
-const client = createClient({ url: env.DATABASE_URL });
-
-export const db = drizzle(client, { schema });
+export type Db = ReturnType<typeof db>;
