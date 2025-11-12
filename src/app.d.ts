@@ -5,6 +5,9 @@ declare global {
       cf: CfProperties;
       ctx: ExecutionContext;
     }
+    interface Locals {
+      db: ReturnType<typeof import("$lib/server/db").initDb>;
+    }
   }
 }
 

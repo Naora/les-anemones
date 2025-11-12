@@ -1,32 +1,13 @@
 <script lang="ts">
-import type { PageProps } from "./$types";
-
-const { data }: PageProps = $props();
-
-let products = $state(data.products.map((p) => ({ ...p, selected: false })));
-
-function toggleSelectAll(event: Event) {
-  const el = event.target as HTMLInputElement;
-  el.indeterminate = false;
-
-  if (el.checked === false)
-    products = products.map((p) => ({ ...p, selected: false }));
-  else products = products.map((p) => ({ ...p, selected: true }));
-}
-
-function isIntermediateState() {
-  const el = document.getElementById("select-all") as HTMLInputElement;
-  el.indeterminate = true;
-}
+import { getProducts } from "$lib/rpc/product.remote";
 </script>
 
 <svelte:head>
 	<title>Admin - Produits</title>
 </svelte:head>
 
-<form method="POST" class="p-4 bg-base-100 rounded-box">
-  <div class="flex justify-between mb-4 gap-2">
-    <button class="btn btn-error" formaction="?/delete">Supprimer</button>
+<div class="p-4 bg-base-100 rounded-box">
+  <div class="flex justify-end justify-between mb-4 gap-2">
     <a href="/admin/products/create" class="btn btn-primary">Ajouter</a>
   </div>
 
@@ -34,11 +15,6 @@ function isIntermediateState() {
     <table class="table">
       <thead>
         <tr>
-          <th>
-            <label>
-              <input id="select-all" type="checkbox" class="checkbox" onclick={toggleSelectAll} />
-            </label>
-          </th>
           <th>Nom</th>
           <th>Description</th>
           <th>Prix</th>
@@ -47,13 +23,8 @@ function isIntermediateState() {
         </tr>
       </thead>
       <tbody>
-	{#each products as product}
+	{#each await getProducts() as product}
           <tr>
-            <th scope="row">
-              <label>
-                <input type="checkbox" class="checkbox" name="ids" value={product.id}  onclick={isIntermediateState} bind:checked={product.selected} />
-              </label>
-            </th>
             <td>
               <div class="flex items-center gap-3">
                 <div class="avatar">
@@ -82,4 +53,4 @@ function isIntermediateState() {
       </tbody>
     </table>
   </div>
-</form>
+</div>

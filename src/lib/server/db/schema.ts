@@ -45,3 +45,13 @@ export const products = sqliteTable("products", {
 
 export type DbProduct = typeof products.$inferSelect;
 export type DbInsertProduct = typeof products.$inferInsert;
+
+export const medias = sqliteTable("media", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  key: text("key").notNull(),
+});
+
+export type DbMedia = typeof medias.$inferSelect;
+export type DbInsertMedia = typeof medias.$inferInsert;
