@@ -1,11 +1,7 @@
 <script lang="ts">
-import Checkbox from "$lib/components/Checkbox.svelte";
-import Input from "$lib/components/Input.svelte";
-import InputText from "$lib/components/InputText.svelte";
-import Textarea from "$lib/components/Textarea.svelte";
+import Issues from "$lib/components/Issues.svelte";
 import TokenInput from "$lib/components/TokenInput.svelte";
 import { createProduct } from "$lib/rpc/product.remote";
-import type { RemoteFormField, RemoteFormFieldValue } from "@sveltejs/kit";
 
 const { name, price, stock, description, categories, published } =
   createProduct.fields;
@@ -15,23 +11,38 @@ const { name, price, stock, description, categories, published } =
 	<title>Admin - Ajouter un produit</title>
 </svelte:head>
 
-<div class="flex flex-col lg:flex-row justify-evenly gap-4">
-  <form {...createProduct} class="flex flex-col flex-1 bg-base-100 shadow-sm p-4 space-y-4 rounded-lg" >
-    <legend class="fieldset-legend">Ajouter un produit</legend>
+<section class="w-full">
+  <h1>Ajouter un produit</h1>
 
-    <InputText field={name} label="Nom" class="w-full"  />
-    <input {...name.as("text")} class="input w-full" />
-
-    <div class="flex flex-wrap gap-4">
-      <Input {...price.as("number")} issues={price.issues()} step="0.01" label="€" />
-      <Input {...stock.as("number")} issues={stock.issues()} label="Stock" />
+  <form {...createProduct} >
+    <div class="flex direction-column margin-end-space">
+      <label for="name">Nom</label>
+      <Issues issues={name.issues()} />
+      <input {...name.as("text")} />
     </div>
 
+    <div class="flex direction-column margin-end-space">
+      <label for="name">Prix</label>
+      <Issues issues={price.issues()} />
+      <input {...price.as("number")} step="0.01" />
+    </div>
+    <div class="flex direction-column margin-end-space">
+      <label for="name">Stock</label>
+      <Issues issues={stock.issues()} />
+      <input {...stock.as("number")} />
+    </div>
+    
     <TokenInput {...categories.as("text")} label="Catégories" />
-    <Textarea {...description.as("text")} class="w-full mb-4" />
-    <Checkbox {...published.as("checkbox")} issues={published.issues()} label="Publié"  />
 
-    <button type="submit" class="btn btn-primary w-fit">Ajouter</button>
+    <label for="description">Description</label>
+    <textarea {...description.as("text")} ></textarea>
+    <label for="published" class="margin-end-space">
+      <input {...published.as("checkbox" )} />
+      Publié
+    </label>
+
+    <button type="submit">Ajouter</button>
   </form>
+</section>
 
-</div>
+

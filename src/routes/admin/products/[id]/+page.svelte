@@ -1,47 +1,50 @@
 <script lang="ts">
-import Checkbox from "$lib/components/Checkbox.svelte";
-import Input from "$lib/components/Input.svelte";
-import Textarea from "$lib/components/Textarea.svelte";
+import Issues from "$lib/components/Issues.svelte";
 import TokenInput from "$lib/components/TokenInput.svelte";
 import { updateProduct, getProduct } from "$lib/rpc/product.remote";
 
 const { params } = $props();
-
-const initial = await getProduct(params.id);
+const product = await getProduct(params.id);
 const { id, name, price, stock, description, categories, published } =
   updateProduct.fields;
-
-name.set(initial.name);
-price.set(initial.price);
-stock.set(initial.stock);
-description.set(initial.description);
-published.set(initial.published ?? false);
 </script>
 
 <svelte:head>
 	<title>Admin - Modifier un produit</title>
 </svelte:head>
 
-<div class="flex flex-col lg:flex-row justify-evenly gap-4">
-  <form {...updateProduct} class="flex flex-col flex-1 bg-base-100 shadow-sm p-4 space-y-4 rounded-lg" >
-    <legend class="fieldset-legend">Modifier un produit</legend>
+<section class="w-full">
+  <h1>Modifier un produit</h1>
 
-    <Input {...name.as("text")} issues={name.issues()} label="Nom" class="w-full"  />
-
-    <div class="flex flex-wrap gap-4">
-      <Input {...price.as("number")} issues={price.issues()} step="0.01" label="€" />
-      <Input {...stock.as("number")} issues={stock.issues()} label="Stock" />
+  <form {...updateProduct} >
+    <div class="flex direction-column margin-end-space">
+      <label for="name">Nom</label>
+      <Issues issues={name.issues()} />
+      <input {...name.as("text")} value={product.name} />
     </div>
 
-    <TokenInput {...categories.as("text")} label="Catégories" initial={initial.categories} />
-    <Textarea {...description.as("text")} issues={description.issues()} class="w-full mb-4" />
-    <Checkbox {...published.as("checkbox")} issues={published.issues()} label="Publié" /> 
+    <div class="flex direction-column margin-end-space">
+      <label for="name">Prix</label>
+      <Issues issues={price.issues()} />
+      <input {...price.as("number")} step="0.01" value={product.price} />
+    </div>
+    <div class="flex direction-column margin-end-space">
+      <label for="name">Stock</label>
+      <Issues issues={stock.issues()} />
+      <input {...stock.as("number")} value={product.stock} />
+    </div>
+    
+    <TokenInput {...categories.as("text")} label="Catégories" initial={product.categories} />
 
-    <input {...id.as("hidden", initial.id)} />
+    <label for="description">Description</label>
+    <textarea {...description.as("text")} value={product.description}></textarea>
+    <label for="published" class="margin-end-space">
+      <input {...published.as("checkbox" )} value={product.published}/>
+      Publié
+    </label>
+    
+    <input {...id.as("hidden", product.id)} />
 
-    <button type="submit" class="btn btn-primary w-fit">Modifier</button>
+    <button type="submit">Modifier</button>
   </form>
-
-</div>
-
-
+</section>

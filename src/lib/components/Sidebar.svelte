@@ -1,19 +1,22 @@
 <script lang="ts">
-import PanelRight from "@lucide/svelte/icons/panel-right";
+import type { HTMLAttributes } from "svelte/elements";
 
-const { children } = $props();
+const { children, ...props }: HTMLAttributes<EventTarget> = $props();
 </script>
 
-<div class="drawer-side is-drawer-close:overflow-visible">
-  <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-  <div class="is-drawer-close:w-14 is-drawer-open:w-64 bg-base-100 flex flex-col items-start min-h-full">
-    <ul class="menu w-full grow">
+
+<nav {...props} >
+  <div class="margin-start-3xl show-above-m">
+    <ul class="list-unstyled">
       {@render children?.()}
     </ul>
-    <div class="m-2 is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Open">
-      <label for="my-drawer" class="btn btn-ghost btn-circle drawer-button is-drawer-open:rotate-y-180">
-        <PanelRight />
-      </label>
-    </div>
   </div>
-</div>
+  <div class="callout margin-end-3xl hide-above-m">
+    <details>
+      <summary>Actions</summary>
+      <ul class="list-unstyled">
+        {@render children?.()}
+      </ul>
+    </details>
+  </div>
+</nav>

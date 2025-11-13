@@ -53,22 +53,21 @@ export async function addCategories(
     locals: { db },
   } = event;
 
-  await db.transaction(async (tx) => {
-    tx.insert(tables.categories)
-      .values(categories.map((name) => ({ name })))
-      .onConflictDoNothing()
-      .returning();
+  await db
+    .insert(tables.categories)
+    .values(categories.map((name) => ({ name })))
+    .onConflictDoNothing()
+    .returning();
 
-    await tx.insert(tables.productCategories).select(
-      db
-        .select({
-          productId: sql<string>`${product.id}`.as("productId"),
-          categoryId: tables.categories.id,
-        })
-        .from(tables.categories)
-        .where(inArray(tables.categories.name, categories)),
-    );
-  });
+  await db.insert(tables.productCategories).select(
+    db
+      .select({
+        productId: sql<string>`${product.id}`.as("productId"),
+        categoryId: tables.categories.id,
+      })
+      .from(tables.categories)
+      .where(inArray(tables.categories.name, categories)),
+  );
 }
 
 export async function updateCategories(

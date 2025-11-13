@@ -6,13 +6,13 @@ import { getProducts } from "$lib/rpc/product.remote";
 	<title>Admin - Produits</title>
 </svelte:head>
 
-<div class="p-4 bg-base-100 rounded-box">
-  <div class="flex justify-end justify-between mb-4 gap-2">
-    <a href="/admin/products/create" class="btn btn-primary">Ajouter</a>
+<div >
+  <div>
+    <a class="btn primary" href="/admin/products/create" >Ajouter</a>
   </div>
 
-  <div class="overflow-x-auto">
-    <table class="table">
+  <div class="scroll-horizontal" >
+    <table >
       <thead>
         <tr>
           <th>Nom</th>
@@ -26,9 +26,9 @@ import { getProducts } from "$lib/rpc/product.remote";
 	{#each await getProducts() as product}
           <tr>
             <td>
-              <div class="flex items-center gap-3">
-                <div class="avatar">
-                  <div class="mask mask-squircle h-12 w-12">
+              <div >
+                <div >
+                  <div >
                     <!-- TODO: remplacer par product.image -->
                     <img
                       src="https://lipsum.app/128x128" 
@@ -36,7 +36,7 @@ import { getProducts } from "$lib/rpc/product.remote";
                   </div>
                 </div>
                 <div>
-                  <div class="font-bold">{product.name}</div>
+                  <div >{product.name}</div>
                 </div>
               </div>
             </td>
@@ -46,7 +46,7 @@ import { getProducts } from "$lib/rpc/product.remote";
             <td>{product.price.toFixed(2)} €</td>
 	    <td>{product.stock}</td>
             <th scope="row">
-              <a href={`/admin/products/${product.id}`} class="btn btn-ghost btn-xs">modifier</a>
+              <a href={`/admin/products/${product.id}`} >modifier</a>
             </th>
           </tr>
     	{/each}

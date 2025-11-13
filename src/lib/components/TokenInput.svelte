@@ -1,7 +1,5 @@
 <script lang="ts">
-import type { HTMLInputAttributes } from "svelte/elements";
-
-interface Props extends HTMLInputAttributes {
+interface Props {
   initial?: string[];
   label?: string;
 }
@@ -33,18 +31,19 @@ function onkeydown(e: KeyboardEvent) {
 }
 </script>
 
-<div class="flex flex-wrap gap-2 mb-2">
-  {#each tokens as token, index}
-      <button type="button" class="btn btn-primary" onclick={() => removeToken(index)}>{token}</button>
-  {/each}
-</div>
-<label class="input" for={props.name}>
-  {#if label}<span class="label">{label}</span>{/if}
-  <input
-    type="text"
-    bind:value={input}
-    onchange={addToken}
-    {onkeydown}
-  />
-  <input type="hidden" {...props} value={tokens.join(";")} />
-</label>
+  <label for={props.name}>
+    {#if label}{label}{/if}
+    <div class="flex wrap gap-5xs margin-end-2xs" >
+      {#each tokens as token, index}
+          <button type="button" class="primary"  onclick={() => removeToken(index)}>{token}</button>
+      {/each}
+    </div>
+    <input
+      type="text"
+      bind:value={input}
+      onchange={addToken}
+      {onkeydown}
+    />
+    <input type="hidden" {...props} value={tokens.join(";")} />
+  </label>
+

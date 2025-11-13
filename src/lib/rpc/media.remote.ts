@@ -1,6 +1,6 @@
 import { setTimeout } from "node:timers/promises";
 import { form } from "$app/server";
-import { mediaSchema } from "./media.schema";
+import { mediaSchema } from "../../../../lib/rpc/media.schemadmin/products/(actions)/media.schema";
 import * as v from "valibot";
 
 export const createMedia = form(mediaSchema, async (data) => {

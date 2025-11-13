@@ -1,2 +1,18 @@
-@import "tailwindcss";
-@plugin "daisyui";
+@import "kelpui";
+
+input[aria-invalid="true"] {
+  --color-fill-vivid: var(--color-danger-fill-vivid);
+  --color-fill-accent: var(--color-danger-fill-accent);
+  --color-fill-muted: var(--color-danger-fill-muted);
+  --color-border-vivid: var(--color-danger-border-vivid);
+  --color-border-accent: var(--color-danger-border-accent);
+  --color-border-muted: var(--color-danger-border-muted);
+  --color-on-vivid: var(--color-danger-on-vivid);
+  --color-on-accent: var(--color-danger-on-accent);
+  --color-on-muted: var(--color-danger-on-muted);
+  --color-outline: var(--color-danger-outline);
+}
+
+.w-full {
+  width: 100%;
+}
