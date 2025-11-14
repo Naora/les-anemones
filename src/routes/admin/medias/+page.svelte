@@ -1,10 +1,8 @@
-
 <script lang="ts">
 import { addMedias, getImages } from "$lib/rpc/media.remote";
 import { addMediasSchema } from "$lib/rpc/media.schema";
 
 const { files } = addMedias.fields;
-// const images = await getImages();
 </script>
 
 
@@ -23,9 +21,17 @@ const { files } = addMedias.fields;
 </form>
 
 <section class="grid-auto">
-  {#each await getImages() as image} 
-      <img src="/images/{image}/thumbnail" alt="preview" class="media-thumbnail" loading="lazy" /> 
-  {/each}
+  {#await getImages()}
+    <div>Chargement des images...</div>
+  {:then images}
+    {#each images as image} 
+        <img src="/images/{image}/thumbnail" alt="preview" class="media-thumbnail" loading="lazy" /> 
+    {/each}
+  {:catch}
+    <div class="callout warning">
+      Impossible de charger les images.
+    </div>
+  {/await}
 
 </section>
 

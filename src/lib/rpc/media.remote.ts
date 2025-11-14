@@ -1,4 +1,5 @@
 import { form, getRequestEvent, query } from "$app/server";
+import { setTimeout } from "timers/promises";
 import { addMediasSchema } from "./media.schema";
 
 export const getBucket = query((): R2Bucket => {
@@ -17,7 +18,7 @@ export const getCfImage = query((): ImagesBinding => {
   return image;
 });
 
-function resizeImage(
+async function resizeImage(
   image: ImagesBinding,
   fileBuffer: ReadableStream<Uint8Array>,
   width: number,
