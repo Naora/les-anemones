@@ -7,7 +7,7 @@ const { children, ...props }: HTMLAttributes<EventTarget> = $props();
 
 <nav {...props} >
   <div class="margin-start-3xl show-above-m">
-    <ul class="list-unstyled">
+    <ul class="list-unstyled stack gap-2xs">
       {@render children?.()}
     </ul>
   </div>

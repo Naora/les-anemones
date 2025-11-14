@@ -1,28 +1,16 @@
 <script lang="ts">
-import Input from "$lib/components/Input.svelte";
-import { createMedia } from "$lib/rpc/media.remote";
-import { mediaSchema } from "$lib/rpc/media.schema";
+import Issues from "$lib/components/Issues.svelte";
+import { addMedias } from "$lib/rpc/media.remote";
+import { addMediasSchema } from "$lib/rpc/media.schema";
 
-const { file, description } = createMedia.fields;
+const { files } = addMedias.fields;
 </script>
 
 
-<form {...createMedia.preflight(mediaSchema)} > 
-  <div >
-    <input  {...file.as("file")} accept="image/*"  multiple />
-    {#each file.issues() as issue}
-      <span >
-          <p>{issue.message}</p>
-      </span>
-    {/each}
-  </div>
+<form {...addMedias.preflight(addMediasSchema)} enctype="multipart/form-data"> 
 
-  <Input {...description.as("text")} />
-  {#each description.issues() as issue}
-    <div >
-        <p>{issue.message}</p>
-    </div>
-  {/each}
+  <input  {...files.as("file multiple")} accept="image/*" />
+  <Issues issues={files.issues()} />
 
   <button >Envoyer</button>
 </form>

@@ -3,12 +3,12 @@ import * as v from "valibot";
 export const newProductSchema = v.object({
   name: v.pipe(v.string(), v.nonEmpty("Le nom du produit est requis.")),
   price: v.pipe(
-    v.number(),
+    v.number("Le prix doit être un nombre."),
     v.minValue(0, "Le prix doit être un nombre entier."),
   ),
   stock: v.pipe(
-    v.number(),
-    v.integer("Le stock doit être un nombre entier."),
+    v.number("Le stock restant doit être un nombre entier."),
+    v.integer("Le stock restant doit être un nombre entier."),
     v.minValue(0, "La quantité en stock doit être un entier positif."),
   ),
   description: v.pipe(
