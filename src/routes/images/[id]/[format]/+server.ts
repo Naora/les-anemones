@@ -1,6 +1,6 @@
 import { error, type RequestHandler } from "@sveltejs/kit";
 import * as v from "valibot";
-import { getRequestEvent } from "$app/server";
+import { getBucket } from "$lib/rpc/media.remote";
 
 const imageSchema = v.object({
   id: v.string(),
@@ -12,7 +12,7 @@ const imageSchema = v.object({
 });
 
 export const GET: RequestHandler = async ({ params }) => {
-  const event = getRequestEvent();
+  const bucket = await getBucket();
   const validation = v.safeParse(imageSchema, params);
 
   if (!validation.success) {
@@ -21,5 +21,18 @@ export const GET: RequestHandler = async ({ params }) => {
   }
   const data = validation.output;
 
-  return event.fetch(`/images/${data.id}`, { cf: { image: { width: 300 } } });
+  const file = await bucket.get(`${data.format}-${data.id}`);
+  if (!file) return error(404, { message: "File not found" });
+
+  const response = new Response(file.body, {
+    headers: {
+      "Content-Type":
+        file.httpMetadata?.contentType || "application/octet-stream",
+      "Cache-Control":
+        file.httpMetadata?.cacheControl || "public, max-age=31536000",
+      "Content-Length": file.size.toString(),
+    },
+  });
+
+  return response;
 };

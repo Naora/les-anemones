@@ -22,11 +22,9 @@ const { files } = addMedias.fields;
   <button>Envoyer</button>
 </form>
 
-<section class="grid-m margin-top-space">
+<section class="grid-auto">
   {#each await getImages() as image} 
-    <div class="flex direction-column gap-2xs align-center">
-      <img src="/images/{image.key}/thumbnail" alt="preview" class="media-thumbnail" loading="lazy" /> 
-    </div> 
+      <img src="/images/{image}/thumbnail" alt="preview" class="media-thumbnail" loading="lazy" /> 
   {/each}
 
 </section>

@@ -1,7 +1,5 @@
 import { form, getRequestEvent, query } from "$app/server";
-import { error } from "@sveltejs/kit";
 import { addMediasSchema } from "./media.schema";
-import * as v from "valibot";
 
 export const getBucket = query((): R2Bucket => {
   const event = getRequestEvent();
@@ -19,29 +17,74 @@ export const getCfImage = query((): ImagesBinding => {
   return image;
 });
 
-export const addMedias = form(addMediasSchema, async (data, invalid) => {
-  const bucket = await getBucket();
+function resizeImage(
+  image: ImagesBinding,
+  fileBuffer: ReadableStream<Uint8Array>,
+  width: number,
+) {
+  return image
+    .input(fileBuffer)
+    .transform({ width })
+    .output({ format: "image/webp" });
+}
+
+async function resizeAllFormats(fileBuffer: ReadableStream<Uint8Array>) {
   const image = await getCfImage();
+  return Promise.all([
+    resizeImage(image, fileBuffer, 1280),
+    resizeImage(image, fileBuffer, 640),
+    resizeImage(image, fileBuffer, 320),
+  ]);
+}
 
-  try {
-    for (const file of data.files) {
-      const fileBuffer =
-        (await file.arrayBuffer()) as unknown as ReadableStream<Uint8Array>;
-      const imageResponse = (
-        await image
-          .input(fileBuffer)
-          .transform({ width: 1280 })
-          .output({ format: "image/webp" })
-      ).response();
+async function uploadToR2(
+  images: { key: string; buffer: ReadableStream<Uint8Array> }[],
+) {
+  const bucket = await getBucket();
 
-      const uuid = crypto.randomUUID();
-      const arrayBuffer = await imageResponse.arrayBuffer();
-      bucket.put(`image-${uuid}.webp`, arrayBuffer, {
+  return Promise.all(
+    images.map(({ key, buffer }) =>
+      bucket.put(key, buffer, {
         httpMetadata: {
           contentType: "image/webp",
           cacheControl: "public, max-age=31536000",
         },
-      });
+      }),
+    ),
+  );
+}
+
+export const addMedias = form(addMediasSchema, async (data, invalid) => {
+  try {
+    for (const file of data.files) {
+      const fileBuffer =
+        (await file.arrayBuffer()) as unknown as ReadableStream<Uint8Array>;
+      const formats = (await resizeAllFormats(fileBuffer)).map((f) =>
+        f.response(),
+      );
+
+      const [buffer1280, buffer640, buffer320] = await Promise.all(
+        formats.map(
+          (f) => f.arrayBuffer() as unknown as ReadableStream<Uint8Array>,
+        ),
+      );
+
+      const uuid = crypto.randomUUID();
+      const imagesToUpload = [
+        {
+          key: `large-${uuid}.webp`,
+          buffer: buffer1280,
+        },
+        {
+          key: `medium-${uuid}.webp`,
+          buffer: buffer640,
+        },
+        {
+          key: `thumbnail-${uuid}.webp`,
+          buffer: buffer320,
+        },
+      ];
+      await uploadToR2(imagesToUpload);
     }
   } catch (e) {
     console.error("Error uploading media files:", e);
@@ -64,5 +107,7 @@ export const getMedias = query(async (): Promise<R2Objects> => {
 
 export const getImages = query(async () => {
   const medias = await getMedias();
-  return medias.objects.filter((media) => media.key?.startsWith("image-"));
+  return medias.objects
+    .filter((media) => media.key?.startsWith("large-"))
+    .map((l) => l.key.replace("large-", ""));
 });
