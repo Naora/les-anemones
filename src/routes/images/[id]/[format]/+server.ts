@@ -1,6 +1,7 @@
+import { getRequestEvent } from "$app/server";
+import { getCfBucket } from "$lib/server/utils";
 import { error, type RequestHandler } from "@sveltejs/kit";
 import * as v from "valibot";
-import { getBucket } from "$lib/rpc/media.remote";
 
 const imageSchema = v.object({
   id: v.string(),
@@ -12,7 +13,8 @@ const imageSchema = v.object({
 });
 
 export const GET: RequestHandler = async ({ params }) => {
-  const bucket = await getBucket();
+  const event = getRequestEvent();
+  const bucket = getCfBucket(event);
   const validation = v.safeParse(imageSchema, params);
 
   if (!validation.success) {

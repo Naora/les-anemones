@@ -32,7 +32,6 @@ const { files } = addMedias.fields;
       Impossible de charger les images.
     </div>
   {/await}
-
 </section>
 
 

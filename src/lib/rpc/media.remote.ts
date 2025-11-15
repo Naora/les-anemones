@@ -1,14 +1,6 @@
 import { form, getRequestEvent, query } from "$app/server";
-import { setTimeout } from "timers/promises";
+import { getCfBucket } from "$lib/server/utils";
 import { addMediasSchema } from "./media.schema";
-
-export const getBucket = query((): R2Bucket => {
-  const event = getRequestEvent();
-  const bucket = event.platform?.env?.BUCKET;
-
-  if (!bucket) throw new Error("No bucket configured");
-  return bucket;
-});
 
 export const getCfImage = query((): ImagesBinding => {
   const event = getRequestEvent();
@@ -41,7 +33,8 @@ async function resizeAllFormats(fileBuffer: ReadableStream<Uint8Array>) {
 async function uploadToR2(
   images: { key: string; buffer: ReadableStream<Uint8Array> }[],
 ) {
-  const bucket = await getBucket();
+  const event = getRequestEvent();
+  const bucket = getCfBucket(event);
 
   return Promise.all(
     images.map(({ key, buffer }) =>
@@ -99,16 +92,14 @@ export const addMedias = form(addMediasSchema, async (data, invalid) => {
   return { success: true };
 });
 
-export const getMedias = query(async (): Promise<R2Objects> => {
-  const bucket = await getBucket();
-  const files = await bucket.list();
-
-  return files;
-});
-
 export const getImages = query(async () => {
-  const medias = await getMedias();
-  return medias.objects
-    .filter((media) => media.key?.startsWith("large-"))
-    .map((l) => l.key.replace("large-", ""));
+  const event = getRequestEvent();
+  const bucket = getCfBucket(event);
+
+  const images = await bucket.list({ prefix: "large-" });
+  const test = [];
+  for (const obj of images.objects) {
+    test.push(obj.key.replace("large-", ""));
+  }
+  return test;
 });
